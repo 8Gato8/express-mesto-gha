@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const MissingUserIdError = require('../errorClasses/MissingUserIdError');
+const CardNotFoundError = require('../errorClasses/CardNotFoundError');
 
 const getCards = async (req, res) => {
   try {
@@ -12,13 +13,23 @@ const getCards = async (req, res) => {
 
 const deleteCardById = async (req, res) => {
   try {
-    await Card.findByIdAndRemove(req.params.cardId);
+    const card = await Card.findByIdAndRemove(req.params.cardId);
+
+    if (!card) {
+      throw new CardNotFoundError();
+    }
+
     const newCardsArray = await Card.find({});
 
     res.send(newCardsArray);
   } catch (err) {
-    if (err.name === 'CastError') {
-      res.status(404).send({ message: 'Карточка c указанным id не найдена' });
+    if (err.name === 'ValidationError' || err.name === 'CastError') {
+      res.status(400).send({ message: 'Указан неккоректный id карточки' });
+      return;
+    }
+
+    if (err.name === 'CardNotFoundError') {
+      res.status(404).send({ message: 'Карточка не найдена' });
       return;
     }
 
@@ -63,6 +74,10 @@ const likeCard = async (req, res) => {
       { new: true },
     );
 
+    if (!card) {
+      throw new CardNotFoundError();
+    }
+
     res.send(card);
   } catch (err) {
     if (err.name === 'MissingUserIdError') {
@@ -70,7 +85,12 @@ const likeCard = async (req, res) => {
       return;
     }
 
-    if (err.name === 'CastError') {
+    if (err.name === 'ValidationError' || err.name === 'CastError') {
+      res.status(400).send({ message: 'Указан неккоректный id карточки' });
+      return;
+    }
+
+    if (err.name === 'CardNotFoundError') {
       res.status(404).send({ message: 'Карточка не найдена' });
       return;
     }
@@ -91,6 +111,10 @@ const deleteLike = async (req, res) => {
       { new: true },
     );
 
+    if (!card) {
+      throw new CardNotFoundError();
+    }
+
     res.send(card);
   } catch (err) {
     if (err.name === 'MissingUserIdError') {
@@ -98,7 +122,12 @@ const deleteLike = async (req, res) => {
       return;
     }
 
-    if (err.name === 'CastError') {
+    if (err.name === 'ValidationError' || err.name === 'CastError') {
+      res.status(400).send({ message: 'Указан неккоректный id карточки' });
+      return;
+    }
+
+    if (err.name === 'CardNotFoundError') {
       res.status(404).send({ message: 'Карточка не найдена' });
       return;
     }
