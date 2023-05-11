@@ -30,7 +30,7 @@ const getUserById = async (req, res) => {
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -46,7 +46,7 @@ const createUser = async (req, res) => {
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -70,7 +70,7 @@ const updateProfile = async (req, res) => {
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: err.message });
+      res.status(400).send({ message: 'Переданы некорректные данные' });
       return;
     }
 
@@ -79,7 +79,7 @@ const updateProfile = async (req, res) => {
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -112,7 +112,7 @@ const updateAvatar = async (req, res) => {
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 

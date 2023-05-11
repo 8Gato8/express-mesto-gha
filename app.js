@@ -24,6 +24,10 @@ app.use((req, res, next) => {
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 
+app.use('*', (req, res) => {
+  res.status(404).send({ message: 'Ошибка: Запрос с несуществующей странице' });
+});
+
 app.listen(PORT, () => {
   console.log('Сервер запущен');
 });

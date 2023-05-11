@@ -7,7 +7,7 @@ const getCards = async (req, res) => {
     const cards = await Card.find({});
     res.send(cards);
   } catch (err) {
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -33,7 +33,7 @@ const deleteCardById = async (req, res) => {
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -58,7 +58,7 @@ const createCard = async (req, res) => {
       res.status(400).send({ message: 'Переданы некорректные данные' });
       return;
     }
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -95,7 +95,7 @@ const likeCard = async (req, res) => {
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -132,7 +132,7 @@ const deleteLike = async (req, res) => {
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
