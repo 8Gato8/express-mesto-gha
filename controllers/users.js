@@ -13,9 +13,19 @@ const getUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
     res.send(user);
   } catch (err) {
     if (err.name === 'CastError') {
+      res.status(400).send({ message: 'Неккорректно указан id' });
+      return;
+    }
+
+    if (err.name === 'UserNotFoundError') {
       res.status(404).send({ message: 'Пользователь не найден' });
       return;
     }
@@ -51,13 +61,16 @@ const updateProfile = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, about },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
 
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+      res.status(400).send({ message: err.message });
       return;
     }
 
@@ -81,7 +94,10 @@ const updateAvatar = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { avatar },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
 
     res.send(user);
