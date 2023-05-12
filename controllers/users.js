@@ -1,12 +1,18 @@
 const User = require('../models/user');
 const UserNotFoundError = require('../errorClasses/UserNotFoundError');
+const {
+  CREATED_CODE,
+  BAD_REQUEST_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_CODE,
+} = require('../httpStatusCodes/httpStatusCodes');
 
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
     res.send(users);
   } catch (err) {
-    res.status(500).send({ message: 'Произошла ошибка' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
   }
 };
 
@@ -21,16 +27,16 @@ const getUserById = async (req, res) => {
     res.send(user);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Неккорректно указан id' });
+      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Неккорректно указан id' });
       return;
     }
 
     if (err.name === 'UserNotFoundError') {
-      res.status(404).send({ message: err.message });
+      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -39,14 +45,14 @@ const createUser = async (req, res) => {
 
   try {
     const user = await User.create({ name, about, avatar });
-    res.status(201).send(user);
+    res.status(CREATED_CODE).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -54,10 +60,6 @@ const updateProfile = async (req, res) => {
   const { name, about } = req.body;
 
   try {
-    if (!req.user._id) {
-      throw new UserNotFoundError('Пользователь с указанным id не найден');
-    }
-
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, about },
@@ -67,19 +69,23 @@ const updateProfile = async (req, res) => {
       },
     );
 
+    if (!user) {
+      throw new UserNotFoundError('Пользователь с указанным id не найден');
+    }
+
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       return;
     }
 
     if (err.name === 'UserNotFoundError') {
-      res.status(404).send({ message: err.message });
+      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
@@ -87,10 +93,6 @@ const updateAvatar = async (req, res) => {
   const { avatar } = req.body;
 
   try {
-    if (!req.user._id) {
-      throw new UserNotFoundError('Пользователь с указанным id не найден');
-    }
-
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { avatar },
@@ -100,19 +102,23 @@ const updateAvatar = async (req, res) => {
       },
     );
 
+    if (!user) {
+      throw new UserNotFoundError('Пользователь с указанным id не найден');
+    }
+
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       return;
     }
 
     if (err.name === 'UserNotFoundError') {
-      res.status(404).send({ message: err.message });
+      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       return;
     }
 
-    res.status(500).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
   }
 };
 
