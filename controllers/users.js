@@ -56,13 +56,13 @@ const createUser = async (req, res) => {
   }
 };
 
-const updateProfile = async (req, res) => {
-  const { name, about } = req.body;
+const updateUserData = async (req, res) => {
+  const userData = req.body;
 
   try {
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, about },
+      userData,
       {
         new: true,
         runValidators: true,
@@ -89,37 +89,12 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  updateUserData(req, res);
+};
+
 const updateAvatar = async (req, res) => {
-  const { avatar } = req.body;
-
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { avatar },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
-
-    if (!user) {
-      throw new UserNotFoundError('Пользователь с указанным id не найден');
-    }
-
-    res.send(user);
-  } catch (err) {
-    if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      return;
-    }
-
-    if (err.name === 'UserNotFoundError') {
-      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
-      return;
-    }
-
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
-  }
+  updateUserData(req, res);
 };
 
 module.exports = {
