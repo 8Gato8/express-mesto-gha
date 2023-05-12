@@ -68,7 +68,7 @@ const updateUserData = async (req, res) => {
         runValidators: true,
       },
     );
-
+    console.log(user);
     if (!user) {
       throw new UserNotFoundError('Пользователь с указанным id не найден');
     }
