@@ -1,7 +1,6 @@
 class MissingUserIdError extends Error {
-  constructor() {
-    super();
-    this.message = 'Id пользователя не передан в запросе';
+  constructor(message) {
+    super(message);
     this.name = 'MissingUserIdError';
     this.statusCode = 400;
   }

@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 
@@ -10,8 +9,8 @@ const app = express();
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   req.user = {
@@ -28,6 +27,4 @@ app.use('*', (req, res) => {
   res.status(404).send({ message: 'Ошибка: Запрос с несуществующей странице' });
 });
 
-app.listen(PORT, () => {
-  console.log('Сервер запущен');
-});
+app.listen(PORT);

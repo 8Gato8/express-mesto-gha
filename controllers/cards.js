@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const MissingUserIdError = require('../errorClasses/MissingUserIdError');
+/* const MissingUserIdError = require('../errorClasses/MissingUserIdError'); */
 const CardNotFoundError = require('../errorClasses/CardNotFoundError');
 
 const getCards = async (req, res) => {
@@ -16,20 +16,18 @@ const deleteCardById = async (req, res) => {
     const card = await Card.findByIdAndRemove(req.params.cardId);
 
     if (!card) {
-      throw new CardNotFoundError();
+      throw new CardNotFoundError('Карточка с указанным id не найдена');
     }
 
-    const newCardsArray = await Card.find({});
-
-    res.send(newCardsArray);
+    res.send(card);
   } catch (err) {
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: 'Указан неккоректный id карточки' });
       return;
     }
 
     if (err.name === 'CardNotFoundError') {
-      res.status(404).send({ message: 'Карточка не найдена' });
+      res.status(404).send({ message: err.message });
       return;
     }
 
@@ -41,18 +39,18 @@ const createCard = async (req, res) => {
   const { name, link } = req.body;
 
   try {
-    if (!req.user._id) {
-      throw new MissingUserIdError();
-    }
+    /* if (!req.user._id) {
+      throw new MissingUserIdError('Id пользователя не передан в запросе');
+    } */
 
     const card = await Card.create({ name, link, owner: req.user._id });
 
     res.send(card);
   } catch (err) {
-    if (err.name === 'MissingUserIdError') {
+    /* if (err.name === 'MissingUserIdError') {
       res.status(400).send({ message: err.message });
       return;
-    }
+    } */
 
     if (err.name === 'ValidationError') {
       res.status(400).send({ message: 'Переданы некорректные данные' });
@@ -64,9 +62,9 @@ const createCard = async (req, res) => {
 
 const likeCard = async (req, res) => {
   try {
-    if (!req.user._id) {
-      throw new MissingUserIdError();
-    }
+    /* if (!req.user._id) {
+      throw new MissingUserIdError('Id пользователя не передан в запросе');
+    } */
 
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -75,23 +73,23 @@ const likeCard = async (req, res) => {
     );
 
     if (!card) {
-      throw new CardNotFoundError();
+      throw new CardNotFoundError('Карточка с указанным id не найдена');
     }
 
     res.send(card);
   } catch (err) {
-    if (err.name === 'MissingUserIdError') {
+    /* if (err.name === 'MissingUserIdError') {
       res.status(400).send({ message: err.message });
       return;
-    }
+    } */
 
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: 'Указан неккоректный id карточки' });
       return;
     }
 
     if (err.name === 'CardNotFoundError') {
-      res.status(404).send({ message: 'Карточка не найдена' });
+      res.status(404).send({ message: err.message });
       return;
     }
 
@@ -101,9 +99,9 @@ const likeCard = async (req, res) => {
 
 const deleteLike = async (req, res) => {
   try {
-    if (!req.user._id) {
-      throw new MissingUserIdError();
-    }
+    /* if (!req.user._id) {
+      throw new MissingUserIdError('Id пользователя не передан в запросе');
+    } */
 
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -112,23 +110,23 @@ const deleteLike = async (req, res) => {
     );
 
     if (!card) {
-      throw new CardNotFoundError();
+      throw new CardNotFoundError('Карточка с указанным id не найдена');
     }
 
     res.send(card);
   } catch (err) {
-    if (err.name === 'MissingUserIdError') {
+    /* if (err.name === 'MissingUserIdError') {
       res.status(400).send({ message: err.message });
       return;
-    }
+    } */
 
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: 'Указан неккоректный id карточки' });
       return;
     }
 
     if (err.name === 'CardNotFoundError') {
-      res.status(404).send({ message: 'Карточка не найдена' });
+      res.status(404).send({ message: err.message });
       return;
     }
 

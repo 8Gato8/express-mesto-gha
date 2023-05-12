@@ -15,7 +15,7 @@ const getUserById = async (req, res) => {
     const user = await User.findById(req.params.userId);
 
     if (!user) {
-      throw new UserNotFoundError();
+      throw new UserNotFoundError('Пользователь с указанным id не найден');
     }
 
     res.send(user);
@@ -26,7 +26,7 @@ const getUserById = async (req, res) => {
     }
 
     if (err.name === 'UserNotFoundError') {
-      res.status(404).send({ message: 'Пользователь не найден' });
+      res.status(404).send({ message: err.message });
       return;
     }
 
@@ -39,7 +39,7 @@ const createUser = async (req, res) => {
 
   try {
     const user = await User.create({ name, about, avatar });
-    res.send(user);
+    res.status(201).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(400).send({ message: 'Переданы некорректные данные' });
@@ -55,7 +55,7 @@ const updateProfile = async (req, res) => {
 
   try {
     if (!req.user._id) {
-      throw new UserNotFoundError();
+      throw new UserNotFoundError('Пользователь с указанным id не найден');
     }
 
     const user = await User.findByIdAndUpdate(
@@ -88,7 +88,7 @@ const updateAvatar = async (req, res) => {
 
   try {
     if (!req.user._id) {
-      throw new UserNotFoundError();
+      throw new UserNotFoundError('Пользователь с указанным id не найден');
     }
 
     const user = await User.findByIdAndUpdate(

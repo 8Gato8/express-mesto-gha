@@ -1,7 +1,6 @@
 class UserNotFoundError extends Error {
-  constructor() {
-    super();
-    this.message = 'Пользователь с указанным id не найден';
+  constructor(message) {
+    super(message);
     this.name = 'UserNotFoundError';
     this.statusCode = 404;
   }
