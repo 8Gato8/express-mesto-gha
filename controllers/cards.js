@@ -1,10 +1,13 @@
 const Card = require('../models/card');
 const CardNotFoundError = require('../errorClasses/CardNotFoundError');
+const AccessDeniedError = require('../errorClasses/AccessDeniedError');
+
 const {
   CREATED_CODE,
   BAD_REQUEST_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   INTERNAL_SERVER_ERROR_CODE,
+  FORBIDDEN,
 } = require('../httpStatusCodes/httpStatusCodes');
 
 const getCards = async (req, res) => {
@@ -18,14 +21,27 @@ const getCards = async (req, res) => {
 
 const deleteCardById = async (req, res) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.cardId);
+    if (!req.user._id) {
+      throw new AccessDeniedError('Недостаточно прав');
+    }
+    const card = await Card.findById(req.params.cardId);
 
     if (!card) {
       throw new CardNotFoundError('Карточка с указанным id не найдена');
     }
 
+    if (req.user._id !== card.owner) {
+      throw new AccessDeniedError('Недостаточно прав');
+    } else {
+      await Card.findByIdAndRemove(req.params.cardId);
+    }
+
     res.send(card);
   } catch (err) {
+    if (err.name === 'AccessDeniedError') {
+      res.status(FORBIDDEN).send({ message: 'Недостаточно прав' });
+    }
+
     if (err.name === 'CastError') {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Указан неккоректный id карточки' });
       return;
