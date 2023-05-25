@@ -4,6 +4,7 @@ const NOT_FOUND_ERROR_CODE = 404;
 const INTERNAL_SERVER_ERROR_CODE = 500;
 const UNAUTHORIZED = 401;
 const FORBIDDEN = 403;
+const CONFLICT = 409;
 
 module.exports = {
   CREATED_CODE,
@@ -12,4 +13,5 @@ module.exports = {
   INTERNAL_SERVER_ERROR_CODE,
   UNAUTHORIZED,
   FORBIDDEN,
+  CONFLICT,
 };

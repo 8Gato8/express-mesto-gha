@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const UserNotFoundError = require('../errorClasses/UserNotFoundError');
+/* const ConflictError = require('../errorClasses/ConflictError'); */
 
 const {
   CREATED_CODE,
@@ -9,6 +10,7 @@ const {
   NOT_FOUND_ERROR_CODE,
   INTERNAL_SERVER_ERROR_CODE,
   UNAUTHORIZED,
+  CONFLICT,
 } = require('../httpStatusCodes/httpStatusCodes');
 
 const getUsers = async (req, res) => {
@@ -63,6 +65,10 @@ const createUser = async (req, res) => {
   } = req.body;
 
   try {
+    /* if (await User.findOne({ email })) {
+      throw new ConflictError('Пользователь с таким email уже существует');
+    } */
+
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
@@ -73,11 +79,18 @@ const createUser = async (req, res) => {
     });
     res.status(CREATED_CODE).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+    /* if (err.name === 'ConflictError') {
+      res.status(CONFLICT).send({ message: err.message });
+      return;
+    } */
+    if (err.errors.email) {
+      res.status(CONFLICT).send({ message: err.message });
       return;
     }
-
+    if (err.name === 'ValidationError') {
+      res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+      return;
+    }
     res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
   }
 };
