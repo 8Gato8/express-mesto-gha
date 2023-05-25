@@ -83,11 +83,11 @@ const createUser = async (req, res) => {
       res.status(CONFLICT).send({ message: err.message });
       return;
     } */
-    if (err.errors.email) {
-      res.status(CONFLICT).send({ message: err.message });
+    if (err.code === 11000) {
+      res.status(CONFLICT).send({ message: 'Пользователь с таким id уже существует' });
       return;
     }
-    if (err.name === 'ValidationError') {
+    if (err.errors.email) {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
       return;
     }
