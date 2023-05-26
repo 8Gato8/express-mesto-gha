@@ -21,7 +21,6 @@ const getCards = async (req, res, next) => {
 const deleteCardById = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
-
     if (!card) {
       throw new NotFoundError('Карточка с указанным id не найдена');
     }
@@ -35,22 +34,21 @@ const deleteCardById = async (req, res, next) => {
   } catch (err) {
     next(err);
     /* if (err.name === 'AccessDeniedError') {
-      res.status(FORBIDDEN).send({ err, message: 'Недостаточно прав' });
+      res.status(409).send({ err, message: 'Недостаточно прав' });
       return;
     }
 
     if (err.name === 'CastError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Указан неккоректный id карточки' });
+      res.status(400).send({ message: 'Указан неккоректный id карточки' });
       return;
     }
 
     if (err.name === 'CardNotFoundError') {
-      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      res.status(404).send({ message: err.message });
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
-  } */
+    res.status(500).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -78,7 +76,6 @@ const likeCard = async (req, res, next) => {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     );
-
     if (!card) {
       throw new NotFoundError('Карточка с указанным id не найдена');
     }
@@ -100,20 +97,20 @@ const likeCard = async (req, res, next) => {
   }
 };
 
-const deleteLike = async (req, res) => {
+const deleteLike = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } },
       { new: true },
     );
-
     if (!card) {
       throw new NotFoundError('Карточка с указанным id не найдена');
     }
 
     res.send(card);
   } catch (err) {
+    next(err);
     /* if (err.name === 'CastError') {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Указан неккоректный id карточки' });
       return;
