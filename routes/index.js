@@ -53,10 +53,10 @@ router.use((err, req, res, next) => {
     return;
   }
 
-  if (name === 'CastError') {
+  /* if (name === 'CastError') {
     res.status(FORBIDDEN).send({ message: 'Указан некорректный id карточки' });
     return;
-  }
+  } */
 
   if (code === 11000) {
     res.status(CONFLICT).send({ message: 'Пользователь с таким email уже зарегистрирован' });
