@@ -1,14 +1,9 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errorClasses/NotFoundError');
 const AccessDeniedError = require('../errorClasses/AccessDeniedError');
-const InrernalServerError = require('../errorClasses/InternalServerError');
 
 const {
   CREATED_CODE,
-  BAD_REQUEST_ERROR_CODE,
-  NOT_FOUND_ERROR_CODE,
-  INTERNAL_SERVER_ERROR_CODE,
-  FORBIDDEN,
 } = require('../httpStatusCodes/httpStatusCodes');
 
 const getCards = async (req, res, next) => {

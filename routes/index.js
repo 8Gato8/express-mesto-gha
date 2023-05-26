@@ -10,6 +10,8 @@ const auth = require('../middlewares/auth');
 const userRouter = require('./users');
 const cardRouter = require('./cards');
 
+const { INTERNAL_SERVER_ERROR_CODE } = require('../httpStatusCodes/httpStatusCodes');
+
 const { NotFoundError } = require('../errorClasses/NotFoundError');
 
 router.use(express.json());
@@ -36,12 +38,12 @@ router.use('*', (req, res, next) => {
 router.use(errors());
 
 router.use((err, req, res) => {
-  const { statusCode = 500, message } = err;
+  const { statusCode = INTERNAL_SERVER_ERROR_CODE, message } = err;
 
   res
     .status(statusCode)
     .send({
-      message: statusCode === 500
+      message: statusCode === INTERNAL_SERVER_ERROR_CODE
         ? 'На сервере произошла ошибка'
         : message,
     });
