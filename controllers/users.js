@@ -70,14 +70,19 @@ const createUser = async (req, res) => {
     } */
 
     const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({
+    await User.create({
       name,
       about,
       avatar,
       email,
       password: hash,
     });
-    res.status(CREATED_CODE).send(user);
+    res.status(CREATED_CODE).send({
+      name,
+      about,
+      avatar,
+      email,
+    });
   } catch (err) {
     /* if (err.name === 'ConflictError') {
       res.status(CONFLICT).send({ message: err.message });
@@ -113,6 +118,7 @@ const updateUserData = async (req, res) => {
 
     res.send(user);
   } catch (err) {
+    console.log(err);
     if (err.name === 'ValidationError') {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       return;
