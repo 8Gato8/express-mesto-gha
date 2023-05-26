@@ -11,9 +11,6 @@ const getCards = async (req, res, next) => {
     const cards = await Card.find({});
     res.send(cards);
   } catch (err) {
-    /* if(err.name === 'InternalServerError') {
-      res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
-    } */
     next(err);
   }
 };
@@ -33,22 +30,6 @@ const deleteCardById = async (req, res, next) => {
     res.send(card);
   } catch (err) {
     next(err);
-    /* if (err.name === 'AccessDeniedError') {
-      res.status(409).send({ err, message: 'Недостаточно прав' });
-      return;
-    }
-
-    if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Указан неккоректный id карточки' });
-      return;
-    }
-
-    if (err.name === 'CardNotFoundError') {
-      res.status(404).send({ message: err.message });
-      return;
-    }
-
-    res.status(500).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -61,11 +42,6 @@ const createCard = async (req, res, next) => {
     res.status(CREATED_CODE).send(card);
   } catch (err) {
     next(err);
-    /* if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      return;
-    }
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -83,17 +59,6 @@ const likeCard = async (req, res, next) => {
     res.send(card);
   } catch (err) {
     next(err);
-    /* if (err.name === 'CastError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Указан неккоректный id карточки' });
-      return;
-    }
-
-    if (err.name === 'CardNotFoundError') {
-      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
-      return;
-    }
-
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -111,17 +76,6 @@ const deleteLike = async (req, res, next) => {
     res.send(card);
   } catch (err) {
     next(err);
-    /* if (err.name === 'CastError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Указан неккоректный id карточки' });
-      return;
-    }
-
-    if (err.name === 'CardNotFoundError') {
-      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
-      return;
-    }
-
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 

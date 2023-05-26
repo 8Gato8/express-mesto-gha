@@ -1,6 +1,5 @@
 const express = require('express');
 const router = require('express').Router();
-/* const { celebrate, Joi } = require('celebrate'); */
 const { errors } = require('celebrate');
 const { createUser, login } = require('../controllers/users');
 const createUserValidator = require('../middlewares/validators/userValidators/createUserValidator');
@@ -10,9 +9,9 @@ const auth = require('../middlewares/auth');
 const userRouter = require('./users');
 const cardRouter = require('./cards');
 
-const { INTERNAL_SERVER_ERROR_CODE } = require('../httpStatusCodes/httpStatusCodes');
+const { INTERNAL_SERVER_ERROR_CODE, FORBIDDEN } = require('../httpStatusCodes/httpStatusCodes');
 
-const { NotFoundError } = require('../errorClasses/UnauthorizedError');
+const NotFoundError = require('../errorClasses/NotFoundError');
 const { CONFLICT } = require('../httpStatusCodes/httpStatusCodes');
 
 router.use(express.json());
@@ -26,17 +25,15 @@ router.use(auth);
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 
+router.use(errors());
+
 router.use('*', (req, res, next) => {
   try {
-    throw NotFoundError('Ошибка: Запрос к несуществующей странице');
+    throw new NotFoundError('Ошибка: Запрос к несуществующей странице');
   } catch (err) {
     next(err);
   }
-  /* res.status(NOT_FOUND_ERROR_CODE).send({ message:
-     'Ошибка: Запрос к несуществующей странице' }); */
 });
-
-router.use(errors());
 
 router.use((err, req, res, next) => {
   const {
@@ -57,7 +54,7 @@ router.use((err, req, res, next) => {
   }
 
   if (name === 'CastError') {
-    res.status(statusCode).send({ message: 'Указан некорректный id карточки' });
+    res.status(FORBIDDEN).send({ message: 'Указан некорректный id карточки' });
     return;
   }
 
@@ -65,13 +62,6 @@ router.use((err, req, res, next) => {
     res.status(CONFLICT).send({ message: 'Пользователь с таким email уже зарегистрирован' });
     return;
   }
-  /* res
-    .status(statusCode)
-    .send({
-      message: statusCode === INTERNAL_SERVER_ERROR_CODE
-        ? 'На сервере произошла ошибка'
-        : message,
-    }); */
 
   res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
   next();

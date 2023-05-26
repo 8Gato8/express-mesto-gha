@@ -11,7 +11,6 @@ const getUsers = async (req, res, next) => {
     res.send(users);
   } catch (err) {
     next(err);
-    /* res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' }); */
   }
 };
 
@@ -26,17 +25,6 @@ const getUserById = async (req, res, next) => {
     res.send(user);
   } catch (err) {
     next(err);
-    /* if (err.name === 'CastError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Неккорректно указан id' });
-      return;
-    }
-
-    if (err.name === 'UserNotFoundError') {
-      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
-      return;
-    }
-
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -49,7 +37,6 @@ const getCurrentUserInfo = async (req, res, next) => {
     res.send(user);
   } catch (err) {
     next(err);
-    /* res.status(UNAUTHORIZED).send({ message: 'Необходима авторизация' }); */
   }
 };
 
@@ -63,10 +50,6 @@ const createUser = async (req, res, next) => {
   } = req.body;
 
   try {
-    /* if (await User.findOne({ email })) {
-      throw new ConflictError('Пользователь с таким email уже существует');
-    } */
-
     const hash = await bcrypt.hash(password, 10);
     await User.create({
       name,
@@ -83,19 +66,6 @@ const createUser = async (req, res, next) => {
     });
   } catch (err) {
     next(err);
-    /* if (err.name === 'ConflictError') {
-      res.status(CONFLICT).send({ message: err.message });
-      return;
-    } */
-    /* if (err.code === 11000) {
-      res.status(CONFLICT).send({ message: 'Пользователь с таким id уже существует' });
-      return;
-    }
-    if (err.errors.email) {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
-      return;
-    }
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -118,12 +88,6 @@ const updateUserData = async (req, res, next) => {
     res.send(user);
   } catch (err) {
     next(err);
-    /* if (err.name === 'UserNotFoundError') {
-      res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
-      return;
-    }
-
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -149,7 +113,6 @@ const login = async (req, res, next) => {
     res.send({ token });
   } catch (err) {
     next(err);
-    /* res.status(UNAUTHORIZED).send({ message: err.message }); */
   }
 };
 

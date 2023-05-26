@@ -6,7 +6,6 @@ module.exports = (req, res, next) => {
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new UnauthorizedError('Необходима авторизация');
-    /* res.status(UNAUTHORIZED).send({ message: 'Необходима авторизация' }); */
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -20,7 +19,6 @@ module.exports = (req, res, next) => {
     }
   } catch (err) {
     next(err);
-    /* res.status(UNAUTHORIZED).send({ message: 'Необходима авторизация' }); */
   }
 
   req.user = payload;
