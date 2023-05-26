@@ -38,7 +38,6 @@ const createCard = async (req, res, next) => {
 
   try {
     const card = await Card.create({ name, link, owner: req.user._id });
-
     res.status(CREATED_CODE).send(card);
   } catch (err) {
     next(err);
