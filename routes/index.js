@@ -9,7 +9,7 @@ const auth = require('../middlewares/auth');
 const userRouter = require('./users');
 const cardRouter = require('./cards');
 
-const { INTERNAL_SERVER_ERROR_CODE, FORBIDDEN } = require('../httpStatusCodes/httpStatusCodes');
+const { INTERNAL_SERVER_ERROR_CODE } = require('../httpStatusCodes/httpStatusCodes');
 
 const NotFoundError = require('../errorClasses/NotFoundError');
 const { CONFLICT } = require('../httpStatusCodes/httpStatusCodes');
