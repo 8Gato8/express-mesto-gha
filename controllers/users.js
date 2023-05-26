@@ -43,6 +43,9 @@ const getUserById = async (req, res, next) => {
 const getCurrentUserInfo = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(req.user._id);
+    if (!user) {
+      throw new NotFoundError('Пользователь с указанным id не найден');
+    }
     res.send(user);
   } catch (err) {
     next(err);

@@ -12,7 +12,8 @@ const cardRouter = require('./cards');
 
 const { INTERNAL_SERVER_ERROR_CODE } = require('../httpStatusCodes/httpStatusCodes');
 
-const { NotFoundError } = require('../errorClasses/NotFoundError');
+const { NotFoundError } = require('../errorClasses/UnauthorizedError');
+const { CONFLICT } = require('../httpStatusCodes/httpStatusCodes');
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -37,16 +38,43 @@ router.use('*', (req, res, next) => {
 
 router.use(errors());
 
-router.use((err, req, res) => {
-  const { statusCode = INTERNAL_SERVER_ERROR_CODE, message } = err;
+router.use((err, req, res, next) => {
+  const {
+    name,
+    statusCode = INTERNAL_SERVER_ERROR_CODE,
+    message,
+    code,
+  } = err;
 
-  res
+  if (
+    name === 'ValidationError'
+    || name === 'NotFoundError'
+    || name === 'UnauthorizedError'
+    || name === 'AccessDeniedError'
+  ) {
+    res.status(statusCode).send({ message });
+    return;
+  }
+
+  /*   if (name === 'CastError') {
+      res.status(statusCode).send({ message: 'Указан некорректный id карточки' });
+      return;
+    } */
+
+  if (code === 11000) {
+    res.status(CONFLICT).send({ message: 'Пользователь с таким email уже зарегистрирован' });
+    return;
+  }
+  /* res
     .status(statusCode)
     .send({
       message: statusCode === INTERNAL_SERVER_ERROR_CODE
         ? 'На сервере произошла ошибка'
         : message,
-    });
+    }); */
+
+  res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+  next();
 });
 
 module.exports = router;
