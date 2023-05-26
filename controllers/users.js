@@ -1,38 +1,32 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const UserNotFoundError = require('../errorClasses/UserNotFoundError');
-/* const ConflictError = require('../errorClasses/ConflictError'); */
+const NotFoundError = require('../errorClasses/NotFoundError');
 
-const {
-  CREATED_CODE,
-  BAD_REQUEST_ERROR_CODE,
-  NOT_FOUND_ERROR_CODE,
-  INTERNAL_SERVER_ERROR_CODE,
-  UNAUTHORIZED,
-  CONFLICT,
-} = require('../httpStatusCodes/httpStatusCodes');
+const { CREATED_CODE } = require('../httpStatusCodes/httpStatusCodes');
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     res.send(users);
   } catch (err) {
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
+    next(err);
+    /* res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' }); */
   }
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId);
 
     if (!user) {
-      throw new UserNotFoundError('Пользователь с указанным id не найден');
+      throw new NotFoundError('Пользователь с указанным id не найден');
     }
 
     res.send(user);
   } catch (err) {
-    if (err.name === 'CastError') {
+    next(err);
+    /* if (err.name === 'CastError') {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Неккорректно указан id' });
       return;
     }
@@ -42,20 +36,21 @@ const getUserById = async (req, res) => {
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
-const getCurrentUserInfo = async (req, res) => {
+const getCurrentUserInfo = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(req.user._id);
     res.send(user);
   } catch (err) {
-    res.status(UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+    next(err);
+    /* res.status(UNAUTHORIZED).send({ message: 'Необходима авторизация' }); */
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const {
     name,
     about,
@@ -84,11 +79,12 @@ const createUser = async (req, res) => {
       email,
     });
   } catch (err) {
+    next(err);
     /* if (err.name === 'ConflictError') {
       res.status(CONFLICT).send({ message: err.message });
       return;
     } */
-    if (err.code === 11000) {
+    /* if (err.code === 11000) {
       res.status(CONFLICT).send({ message: 'Пользователь с таким id уже существует' });
       return;
     }
@@ -96,11 +92,11 @@ const createUser = async (req, res) => {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
       return;
     }
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
-const updateUserData = async (req, res) => {
+const updateUserData = async (req, res, next) => {
   const userData = req.body;
 
   try {
@@ -113,23 +109,18 @@ const updateUserData = async (req, res) => {
       },
     );
     if (!user) {
-      throw new UserNotFoundError('Пользователь с указанным id не найден');
+      throw new NotFoundError('Пользователь с указанным id не найден');
     }
 
     res.send(user);
   } catch (err) {
-    console.log(err);
-    if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      return;
-    }
-
-    if (err.name === 'UserNotFoundError') {
+    next(err);
+    /* if (err.name === 'UserNotFoundError') {
       res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -141,7 +132,7 @@ const updateAvatar = async (req, res) => {
   updateUserData(req, res);
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
@@ -154,7 +145,8 @@ const login = async (req, res) => {
 
     res.send({ token });
   } catch (err) {
-    res.status(UNAUTHORIZED).send({ message: err.message });
+    next(err);
+    /* res.status(UNAUTHORIZED).send({ message: err.message }); */
   }
 };
 

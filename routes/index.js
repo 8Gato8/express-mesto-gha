@@ -9,7 +9,8 @@ const loginValidator = require('../middlewares/validators/userValidators/loginVa
 const auth = require('../middlewares/auth');
 const userRouter = require('./users');
 const cardRouter = require('./cards');
-const { NOT_FOUND_ERROR_CODE } = require('../httpStatusCodes/httpStatusCodes');
+
+const { NotFoundError } = require('../errorClasses/NotFoundError');
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -22,14 +23,28 @@ router.use(auth);
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 
-router.use('*', (req, res) => {
-  res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Ошибка: Запрос к несуществующей странице' });
+router.use('*', (req, res, next) => {
+  try {
+    throw NotFoundError('Ошибка: Запрос к несуществующей странице');
+  } catch (err) {
+    next(err);
+  }
+  /* res.status(NOT_FOUND_ERROR_CODE).send({ message:
+     'Ошибка: Запрос к несуществующей странице' }); */
 });
 
 router.use(errors());
 
-/* router.use((err, req, res) => {
-  res.status(err.statusCode).send({ message: err.message });
-}); */
+router.use((err, req, res) => {
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+});
 
 module.exports = router;

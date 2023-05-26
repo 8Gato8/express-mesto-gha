@@ -1,6 +1,7 @@
 const Card = require('../models/card');
-const CardNotFoundError = require('../errorClasses/CardNotFoundError');
+const NotFoundError = require('../errorClasses/NotFoundError');
 const AccessDeniedError = require('../errorClasses/AccessDeniedError');
+const InrernalServerError = require('../errorClasses/InternalServerError');
 
 const {
   CREATED_CODE,
@@ -10,21 +11,24 @@ const {
   FORBIDDEN,
 } = require('../httpStatusCodes/httpStatusCodes');
 
-const getCards = async (req, res) => {
+const getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
     res.send(cards);
   } catch (err) {
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    /* if(err.name === 'InternalServerError') {
+      res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    } */
+    next(err);
   }
 };
 
-const deleteCardById = async (req, res) => {
+const deleteCardById = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
 
     if (!card) {
-      throw new CardNotFoundError('Карточка с указанным id не найдена');
+      throw new NotFoundError('Карточка с указанным id не найдена');
     }
 
     if (req.user._id !== `${card.owner.toString()}`) {
@@ -34,7 +38,8 @@ const deleteCardById = async (req, res) => {
 
     res.send(card);
   } catch (err) {
-    if (err.name === 'AccessDeniedError') {
+    next(err);
+    /* if (err.name === 'AccessDeniedError') {
       res.status(FORBIDDEN).send({ err, message: 'Недостаточно прав' });
       return;
     }
@@ -50,10 +55,11 @@ const deleteCardById = async (req, res) => {
     }
 
     res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+  } */
   }
 };
 
-const createCard = async (req, res) => {
+const createCard = async (req, res, next) => {
   const { name, link } = req.body;
 
   try {
@@ -61,15 +67,16 @@ const createCard = async (req, res) => {
 
     res.status(CREATED_CODE).send(card);
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    next(err);
+    /* if (err.name === 'ValidationError') {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       return;
     }
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
-const likeCard = async (req, res) => {
+const likeCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -78,12 +85,13 @@ const likeCard = async (req, res) => {
     );
 
     if (!card) {
-      throw new CardNotFoundError('Карточка с указанным id не найдена');
+      throw new NotFoundError('Карточка с указанным id не найдена');
     }
 
     res.send(card);
   } catch (err) {
-    if (err.name === 'CastError') {
+    next(err);
+    /* if (err.name === 'CastError') {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Указан неккоректный id карточки' });
       return;
     }
@@ -93,7 +101,7 @@ const likeCard = async (req, res) => {
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
@@ -106,12 +114,12 @@ const deleteLike = async (req, res) => {
     );
 
     if (!card) {
-      throw new CardNotFoundError('Карточка с указанным id не найдена');
+      throw new NotFoundError('Карточка с указанным id не найдена');
     }
 
     res.send(card);
   } catch (err) {
-    if (err.name === 'CastError') {
+    /* if (err.name === 'CastError') {
       res.status(BAD_REQUEST_ERROR_CODE).send({ message: 'Указан неккоректный id карточки' });
       return;
     }
@@ -121,7 +129,7 @@ const deleteLike = async (req, res) => {
       return;
     }
 
-    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' });
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка сервера' }); */
   }
 };
 
