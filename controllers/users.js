@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errorClasses/NotFoundError');
+const updateUserData = require('../middlewares/updateUserData');
 
 const { CREATED_CODE } = require('../httpStatusCodes/httpStatusCodes');
 
@@ -64,28 +65,6 @@ const createUser = async (req, res, next) => {
       avatar,
       email,
     });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const updateUserData = async (req, res, next) => {
-  const userData = req.body;
-
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      userData,
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
-    if (!user) {
-      throw new NotFoundError('Пользователь с указанным id не найден');
-    }
-
-    res.send(user);
   } catch (err) {
     next(err);
   }
