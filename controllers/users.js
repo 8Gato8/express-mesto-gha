@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errorClasses/NotFoundError');
+const BadRequestError = require('../errorClasses/BadRequestError');
+const ConflictError = require('../errorClasses/ConflictError');
 const updateUserData = require('../middlewares/updateUserData');
 
 const { CREATED_CODE } = require('../httpStatusCodes/httpStatusCodes');
@@ -25,6 +27,10 @@ const getUserById = async (req, res, next) => {
 
     res.send(user);
   } catch (err) {
+    if (err.name === 'CastError') {
+      next(new BadRequestError('Указан неккоректный id карточки'));
+      return;
+    }
     next(err);
   }
 };
@@ -66,6 +72,12 @@ const createUser = async (req, res, next) => {
       email,
     });
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      next(new BadRequestError('Переданы некорректные данные пользователя'));
+    }
+    if (err.name === 'ConflictError') {
+      next(new ConflictError('Пользователь с таким email уже существует'));
+    }
     next(err);
   }
 };

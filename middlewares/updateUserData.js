@@ -1,3 +1,4 @@
+const BadRequestError = require('../errorClasses/BadRequestError');
 const NotFoundError = require('../errorClasses/NotFoundError');
 const User = require('../models/user');
 
@@ -19,6 +20,9 @@ module.exports = async (req, res, next) => {
 
     res.send(user);
   } catch (err) {
+    if (err.name === 'ValidationName') {
+      next(new BadRequestError('Переданы неккоректные данные'));
+    }
     next(err);
   }
 };
