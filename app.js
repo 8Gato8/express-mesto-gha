@@ -3,6 +3,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const corsHandler = require('./middlewares/corsHandler');
 const router = require('./routes/index');
 const generalErrorHandler = require('./middlewares/generalErrorHandler');
 const nonexistentPathErrorHandler = require('./middlewares/nonexistentPathErrorHandler');
@@ -22,6 +23,8 @@ app.use(helmet());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(corsHandler);
 
 app.use('/', router);
 
